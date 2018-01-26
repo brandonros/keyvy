@@ -1,70 +1,10 @@
 var Promise = require('bluebird');
+var ProgressBar = require('progress');
+var uuid = require('uuid');
 
 var Client = require('../lib/keyvy-client.js');
 
 (async function() {
-  var messages = [
-    {
-      action: 'get',
-      key: 'sequence'
-    },
-    {
-      action: 'set',
-      key: 'sequence',
-      value: 1
-    },
-    {
-      action: 'get',
-      key: 'sequence'
-    },
-    {
-      action: 'push',
-      key: 'messages',
-      value: {message: 1}
-    },
-    {
-      action: 'push',
-      key: 'messages',
-      value: {message: 2}
-    },
-    {
-      action: 'push',
-      key: 'messages',
-      value: {message: 3}
-    },
-    {
-      action: 'length',
-      key: 'sequence'
-    },
-    {
-      action: 'pop',
-      key: 'messages'
-    },
-    {
-      action: 'pop',
-      key: 'messages'
-    },
-    {
-      action: 'pop',
-      key: 'messages'
-    },
-    {
-      action: 'pop',
-      key: 'messages'
-    },
-    {
-      action: 'subscribe',
-      event: 'specialEvent'
-    },
-    {
-      action: 'publish',
-      event: 'specialEvent',
-      data: {
-        value: 3
-      }
-    }
-  ];
-
   var client = new Client();
 
   await client.init('127.0.0.1', 1337);
@@ -73,9 +13,36 @@ var Client = require('../lib/keyvy-client.js');
     console.log('specialEvent', data);
   });
 
-  await Promise.each(messages, async function(message) {
-    console.log(await client.receiveResponse(client.sendMessage(message)));
-  })
+  console.log('Pushing');
+
+  var bar = new ProgressBar('pushing [:bar] :rate/tps :percent :etas', { total: 100000 });
+
+  for (var i = 0; i < 100000; ++i) {
+    var message = {
+      action: 'push',
+      key: 'messages',
+      value: {message: i}
+    };
+
+    await client.receiveResponse(client.sendMessage(message));
+
+    bar.tick(1);
+  }
+
+  console.log('Popping');
+
+  var bar = new ProgressBar('popping [:bar] :rate :percent :etas', { total: 100000 });
+
+  for (var i = 0; i < 100000; ++i) {
+    var message = {
+      action: 'pop',
+      key: 'messages'
+    };
+
+    await client.receiveResponse(client.sendMessage(message));
+
+    bar.tick(1);
+  }
 })();
 
 process.on('unhandledRejection', function(err) {
