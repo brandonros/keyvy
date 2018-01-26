@@ -1,0 +1,25 @@
+{
+  "name": "keyvy",
+  "version": "1.0.0",
+  "description": "node.js key-value store",
+  "main": "keyvy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brandonros/keyvy.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brandonros/keyvy/issues"
+  },
+  "homepage": "https://github.com/brandonros/keyvy#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "carrier": "^0.3.0",
+    "rwlock": "^5.0.0",
+    "uuid": "^3.2.1"
+  }
+}
